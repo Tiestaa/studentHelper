@@ -4,7 +4,7 @@
     "description": "Chatbot for students. Upload your pdfs (slides, notes, ...) and submit question to cat. Sources are always in answer. If the student wants, he can activate the online search to augment prompt.",
     "author_name": "Francesco Testa",
     "author_url": "https://github.com/Tiestaa",
-    "plugin_url": "https://github.com/my_name/student_helper",
+    "plugin_url": "https://github.com/Tiestaa/studentHelper",
     "tags": "cat, beautifulsoup, students",
     "thumb": "https://raw.githubusercontent.com/Tiestaa/studentHelper/main/student_helper.png"
 }
