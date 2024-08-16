@@ -1,0 +1,4 @@
+googlesearch-python
+requests
+bs4
+langchain_experimental

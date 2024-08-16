@@ -1,10 +1,10 @@
 {
     "name": "Student Helper",
     "version": "0.0.1",
-    "description": "Description of student_helper.",
-    "author_name": "Me",
-    "author_url": "https://mywebsite.me",
+    "description": "Chatbot for students. Upload your pdfs (slides, notes, ...) and submit question to cat. Sources are always in answer. If the student wants, he can activate the online search to augment prompt.",
+    "author_name": "Francesco Testa",
+    "author_url": "https://github.com/Tiestaa",
     "plugin_url": "https://github.com/my_name/student_helper",
-    "tags": "cat, template, example",
-    "thumb": "https://raw.githubusercontent.com/my_repo_path/student_helper.png"
+    "tags": "cat, beautifulsoup, students",
+    "thumb": "https://raw.githubusercontent.com/Tiestaa/studentHelper/main/student_helper.png"
 }
