@@ -52,6 +52,13 @@ def before_cat_recalls_declarative_memories(declarative_recall_config, cat):
     return declarative_recall_config
 
 @hook  # default priority = 1
+def before_cat_recalls_procedural_memories(procedural_recall_config, cat):
+    # decrease the threshold to recall more tools
+    procedural_recall_config["threshold"] = 0.55
+
+    return procedural_recall_config
+
+@hook  # default priority = 1
 def agent_prompt_suffix(prompt_suffix, cat):
 
     prompt_suffix = """ 
