@@ -14,6 +14,7 @@ class MySettings(BaseModel):
     """
     breakpoint_threshold_type: str = "percentile"
     breakpoint_threshold_amount: float = 95
+    answer_language: str = "English"
 
 
 @plugin
