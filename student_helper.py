@@ -44,8 +44,8 @@ def before_rabbithole_insert_memory(doc: Document, cat) -> Document:
 @hook  # default priority = 1
 def before_cat_recalls_declarative_memories(declarative_recall_config, cat):
 
-    declarative_recall_config["k"] = 50
-    declarative_recall_config["threshold"] = 0.2
+    declarative_recall_config["k"] = 5
+    declarative_recall_config["threshold"] = 0.65
     # Every user can access only files uploaded by him
     declarative_recall_config["metadata"] = {"user_id": cat.user_id}
 
