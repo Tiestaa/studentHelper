@@ -83,7 +83,7 @@ def agent_prompt_suffix(prompt_suffix, cat):
 
 @hook
 def agent_fast_reply(fast_reply, cat):
-    if ("search_activated" not in cat.working_memory or not cat.working_memory["search_activated"]) and len(cat.working_memory.declarative_memories) == 0:
+    if ("search_activated" not in cat.working_memory or cat.working_memory["search_activated"] == False) and len(cat.working_memory.declarative_memories) == 0 and len(cat.working_memory.procedural_memories) == 0 :
         fast_reply["output"] = "Sorry, unfortunately I still have no information about it. If you want to activate online search, send 'active google search' or similar sentences."
     return fast_reply
 
