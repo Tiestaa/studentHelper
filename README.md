@@ -6,23 +6,29 @@
 [![Awesome plugin](https://custom-icon-badges.demolab.com/static/v1?label=&message=Awesome+plugin&color=000000&style=for-the-badge&logo=cheshire_cat_ai)](https://)  
 [![awesome plugin](https://custom-icon-badges.demolab.com/static/v1?label=&message=awesome+plugin&color=F4F4F5&style=for-the-badge&logo=cheshire_cat_black)](https://)
 
-Write here all the useful information about your plugin.
+This is a plugin created for students.
+Do you need to prepare for an exam or an oral test? Install this plugin, upload your Pdf notes and ask Cat anything you want about something related to the exam.
 
-This repository is the template to automate the release of official Cheshire Cat AI plugins. 
+If Cat doesn't have the information you were looking for, he'll give a default answer.
+If you'd like Cat to answer your question in any case, you could activate search on Google by sending a message like  "activate search online" or something similar, and Cat will use the three top Google searches to elaborate your answer.
+Cat will always include the answer's sources: you can further explore the topic by checking the references to the PDF and to the PDF pages (the ones you uploaded) from where the answer was extracted
 
-## Usage
+>**_NOTE:_** embedder and LLM are largely used by this plugin:
+> * embedder is used by semantic chunking. The text splitting is based on semantic similarity, so the embedder is used to compare every sentence of the input text.
+> * llm is used is google search. To reduce the context size, the LLM is called to summarize the results from google search.
 
-1. Create a new repository clicking on the `Use this template` button.
-2. Clone your new repo directly in the Cat's `plugins` folder.
-3. Run the `setup.py` script:
-```bash
-python setup.py
-```
-The script will prompt you to write the name of your plugin and make an initial setup setting the name in the files.
+The Semantic Chunking is taken from https://github.com/nickprock/ccat_semantic_chunking/blob/main/
 
-4. Start developing!
+## Settings
 
-> **Important**
-> A new release of your plugin is triggered every time you set a new `version` in the `plugin.json` file.
-> Please, remember to set it correctly every time you want to release an update.
+`breakpoint_threshold_type` must be one between:
+* *"percentile"*
+* *"standard_deviation"*
+* *"interquartile"*
+    
+the recommended values by langchain for `breakpoint_threshold_amount` are:
+        *"percentile"*: 95
+        *"standard_deviation"*: 3
+        *"interquartile"*: 1.5
 
+`lang` is the language of the cat answer.
