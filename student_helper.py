@@ -3,10 +3,13 @@ from langchain_core.documents import Document
 from googlesearch import search
 from bs4 import BeautifulSoup
 from langchain_experimental.text_splitter import SemanticChunker
+from langchain_community.document_loaders.parsers.pdf import PDFMinerParser
 import requests
 import re
 
 ASCII_RE = r'[^\x00-\x7F]+'
+EMAIL_RE = r'\S*@\S*\s?'
+PAGE_RE = r'\((Page) (\d+)\)'
 
 """ HOOKS """
 
@@ -22,18 +25,54 @@ def rabbithole_instantiates_splitter(text_splitter, cat):
     )
     return text_splitter
 
+@hook
+def rabbithole_instantiates_parsers(file_handlers, cat):
+    # Disable page concatenation to obtain page number
+    file_handlers["application/pdf"] = PDFMinerParser(concatenate_pages = False)
+    return file_handlers
+
 @hook  # default priority = 1
 def before_rabbithole_splits_text(docs, cat):
+    # Add page in every statement. 
+    # This is useful cause user can't know where the splitter cuts. After the split is deleted.
+    full_content = ""
+    new_docs = []
+    current_meta = docs[0].metadata
     for doc in docs:
-        doc.page_content = doc.page_content.replace("\n", "")
-    return docs
+        doc.page_content = doc.page_content.replace("\n", " ").replace(EMAIL_RE, "")
+        if "page" in doc.metadata.keys():
+            # AGGIUNGERE ANCHE ?! ...
+            doc.page_content = doc.page_content.replace(". ", f".(Page {doc.metadata['page']})")
+        
+        if current_meta['source'] == doc.metadata['source']:
+            full_content += doc.page_content
+        else:
+            new_docs.append(Document(page_content = full_content, metadata = {"source": current_meta['source']}))
+            current_meta = doc.metadata
+            full_content = doc.page_content
+
+    new_docs.append(Document(page_content = full_content, metadata = {"source": current_meta['source']}))
+
+    return new_docs
+
+@hook  # default priority = 1
+def after_rabbithole_splitted_text(chunks, cat):
+    # remove every occurence of (Page xx) and insert in metadata the pages before store the chunk
+    for chunk in chunks:
+        pages = re.findall(PAGE_RE, chunk.page_content)
+        chunk.page_content = re.sub(PAGE_RE, "", chunk.page_content)
+        pagesInt = list(map(lambda x: int(x[1]), pages))
+        chunk.metadata['pages'] = f"{min(pagesInt)}-{max(pagesInt)}"
+    return chunks
+
+
 
 @hook
 def agent_prompt_prefix(prefix, cat):
     prefix = """You are Teacher AI, an intelligent AI that passes the Turing test.
 You are an enthusiastic and supportive Professor, always ready to help students in their studies. 
-You guide students through the educational material, providing clear and DETAILED explanations and examples. 
-You ALWAYS!!!! cite the sources with page number and name of file."""
+You guide students through the educational material, providing clear and detailed explanations and examples. 
+You must ALWAYS cite the sources using ALL page NUMBERS and NAME of files."""
     return prefix
 
 @hook
@@ -54,7 +93,7 @@ def before_cat_recalls_declarative_memories(declarative_recall_config, cat):
 @hook  # default priority = 1
 def before_cat_recalls_procedural_memories(procedural_recall_config, cat):
     # decrease the threshold to recall more tools
-    procedural_recall_config["threshold"] = 0.55
+    procedural_recall_config["threshold"] = 0.5
 
     return procedural_recall_config
 
@@ -87,8 +126,6 @@ def agent_fast_reply(fast_reply, cat):
         fast_reply["output"] = "Sorry, unfortunately I still have no information about it. If you want to activate online search, send 'active google search' or similar sentences."
     return fast_reply
 
-
-
 @hook
 def after_cat_recalls_memories(cat):
     # Format memory using page
@@ -98,8 +135,8 @@ def after_cat_recalls_memories(cat):
 
         "Add page in document, so it can appear in the answer"
 
-        if 'page' in doc[0].metadata.keys():
-            content = f"{re.sub(ASCII_RE,' ', doc[0].page_content)}(page {doc[0].metadata['page']})"
+        if 'pages' in doc[0].metadata.keys():
+            content = f"{re.sub(ASCII_RE,' ', doc[0].page_content)}(pages {doc[0].metadata['pages']})"
             new_doc = Document(
                     page_content = content, 
                     metadata = doc[0].metadata
@@ -124,13 +161,14 @@ def after_cat_recalls_memories(cat):
         results = []
 
 
-        for i, result in enumerate(search_results):
+        for result in search_results:
             response = requests.get(result.url)
 
             if response.status_code == 200:
                 soup = BeautifulSoup(response.text, 'html.parser')
                 text = soup.get_text(" ", strip=True)
-                content = f"{text} (Extracted from {soup.title.string} - URL: {result.url})"
+                summary = cat.llm(f"summarize this text:\n{text}")
+                content = f"{summary} (Extracted from {soup.title.string} - URL: {result.url})"
 
                 results.append(content)
 
@@ -149,7 +187,7 @@ def before_agent_starts(agent_input, cat):
 
 """ TOOLS """
 
-@tool(return_direct=True)
+@tool(return_direct=True, examples=["activate search", "search online"])
 def activateSearch(tool_input, cat):
     """Replies to "activate google search", "can you search online", "activate online search" or similar questions. Input is always None"""
     cat.working_memory.search_activated = True
@@ -160,4 +198,3 @@ def deactivateSearch(tool_input, cat):
     """Replies to "deactivate google search", "stop online search", "stop google search" or similar questions. Input is always None"""
     cat.working_memory.search_activated = False
     return "Online search deactivated."
-

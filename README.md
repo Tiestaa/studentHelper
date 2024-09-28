@@ -11,7 +11,7 @@ Do you need to prepare for an exam or an oral test? Install this plugin, upload 
 
 If Cat doesn't have the information you were looking for, he'll give a default answer.
 If you'd like Cat to answer your question in any case, you could activate search on Google by sending a message like  "activate search online" or something similar, and Cat will use the three top Google searches to elaborate your answer.
-Cat will always include the answer's sources: you can further explore the topic by checking the references to the PDF and to the PDF pages (the ones you uploaded) from where the answer was extracted
+Cat will always include the answer's sources: you can further explore the topic by checking the references to the PDF and to the PDF pages (the ones you uploaded) from where the answer was extracted.
 
 >**_NOTE:_** embedder and LLM are largely used by this plugin:
 > * embedder is used by semantic chunking. The text splitting is based on semantic similarity, so the embedder is used to compare every sentence of the input text.
