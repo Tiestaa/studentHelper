@@ -10,14 +10,14 @@ import re
 ASCII_RE = r'[^\x00-\x7F]+'
 EMAIL_RE = r'\S*@\S*\s?'
 PAGE_RE = r'\((Page) (\d+)\)'
+END_SENTENCE_RE = r'(?<=[.?!])\\s+'
 
 """ HOOKS """
 
-# from: https://github.com/nickprock/ccat_semantic_chunking/blob/main/semantic_chunking.py
 @hook
 def rabbithole_instantiates_splitter(text_splitter, cat):
     settings = cat.mad_hatter.get_plugin().load_settings()
-    
+
     text_splitter = SemanticChunker(
         embeddings=cat.embedder,
         breakpoint_threshold_type=settings["breakpoint_threshold_type"],
@@ -119,12 +119,14 @@ def agent_prompt_suffix(prompt_suffix, cat):
     """
     return prompt_suffix
 
-
+"""
 @hook
 def agent_fast_reply(fast_reply, cat):
     if ("search_activated" not in cat.working_memory or cat.working_memory["search_activated"] == False) and len(cat.working_memory.declarative_memories) == 0 and len(cat.working_memory.procedural_memories) == 0 :
         fast_reply["output"] = "Sorry, unfortunately I still have no information about it. If you want to activate online search, send 'active google search' or similar sentences."
     return fast_reply
+"""
+
 
 @hook
 def after_cat_recalls_memories(cat):
@@ -174,7 +176,7 @@ def after_cat_recalls_memories(cat):
 
         cat.working_memory.google_results = results
 
-
+"""
 @hook
 def before_agent_starts(agent_input, cat):
 
@@ -184,6 +186,8 @@ def before_agent_starts(agent_input, cat):
     agent_input.google_results = "\n".join(cat.working_memory.google_results) if "google_results" in cat.working_memory else ""
 
     return agent_input
+"""
+
 
 """ TOOLS """
 
