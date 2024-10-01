@@ -14,6 +14,9 @@ class MySettings(BaseModel):
     """
     breakpoint_threshold_type: str = "percentile"
     breakpoint_threshold_amount: float = 95
+    declarative_recall_number: int = 5
+    declarative_recall_threshold: float = 0.6
+    procedural_recall_threshold: float = 0.75
     answer_language: str = "English"
 
 

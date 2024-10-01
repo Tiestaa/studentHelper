@@ -82,9 +82,10 @@ def before_rabbithole_insert_memory(doc: Document, cat) -> Document:
 
 @hook  # default priority = 1
 def before_cat_recalls_declarative_memories(declarative_recall_config, cat):
+    settings = cat.mad_hatter.get_plugin().load_settings()
 
-    declarative_recall_config["k"] = 5
-    declarative_recall_config["threshold"] = 0.4
+    declarative_recall_config["k"] = settings["declarative_recall_number"]
+    declarative_recall_config["threshold"] = settings["declarative_recall_threshold"]
     # Every user can access only files uploaded by him
     declarative_recall_config["metadata"] = {"user_id": cat.user_id}
 
@@ -92,8 +93,10 @@ def before_cat_recalls_declarative_memories(declarative_recall_config, cat):
 
 @hook  # default priority = 1
 def before_cat_recalls_procedural_memories(procedural_recall_config, cat):
+    settings = cat.mad_hatter.get_plugin().load_settings()
+    
     # decrease the threshold to recall more tools
-    procedural_recall_config["threshold"] = 0.5
+    procedural_recall_config["threshold"] = settings["procedural_recall_threshold"]
 
     return procedural_recall_config
 
