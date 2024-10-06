@@ -74,20 +74,22 @@ You are an enthusiastic and supportive Professor, always ready to help students 
 You guide students through the educational material, providing clear and detailed explanations and examples. 
 You must ALWAYS cite the sources using ALL page NUMBERS and NAME of files."""
     return prefix
-
+"""
 @hook
 def before_rabbithole_insert_memory(doc: Document, cat) -> Document:
     doc.metadata["user_id"] = cat.user_id
     return doc
 
-@hook  # default priority = 1
+"""
+
+@hook
 def before_cat_recalls_declarative_memories(declarative_recall_config, cat):
     settings = cat.mad_hatter.get_plugin().load_settings()
 
     declarative_recall_config["k"] = settings["declarative_recall_number"]
     declarative_recall_config["threshold"] = settings["declarative_recall_threshold"]
     # Every user can access only files uploaded by him
-    declarative_recall_config["metadata"] = {"user_id": cat.user_id}
+    # declarative_recall_config["metadata"] = {"user_id": cat.user_id}
 
     return declarative_recall_config
 
